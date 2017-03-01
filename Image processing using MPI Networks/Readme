@@ -1,0 +1,57 @@
+Nume: Ion Bogdan-Ionut
+Grupa: 332CB
+
+Tema a fost implementata in limbajul C.
+Pentru citirea listei de adiacenta a fiecarui nod(proces) din fisierul 
+topologie.in, am folosit getline, si verific daca prima cifra de pe linie este 
+rank-ul procesului curent. Atunci, atribui lista de adiacenta(vecinii) acestui 
+proces, pe care o salvez in vectorul din structura Node. Fiecare proces are 
+un obiect de tip Node, cu informatii precum: parents(vectorul de parinti pe 
+care il folosesc pentru a stabili arborele de acoperire), neighbours - lista de 
+adiacenta, nr_neighbours - numarul de vecini, updated_nr_neighbours - numarul 
+de vecini actualizat dupa ce o sa elimin nodurile din lista de adiacenta a 
+unui nod care nu sunt vecine in arbore cu acest nod si isLeaf - setat nodului, 
+pentru a stii daca e frunza sau nu.
+
+-- nod este considerat proces in acelasi timp mai jos --
+Arborele de acoperire este gasit folosind sondaje si ecouri ca in laborator, in 
+acest mod: nodul radacina cu rank 0, trimite vectorul de parinti la children, 
+si primeste, la sfarsit, de la children vectorul actualizat, pe care il 
+actualizeaza si el; celelalte noduri primesc acest vector si marcheaza pe pozitia 
+parents[rank] sursa de la care au primit, marcandu-si astfel parintele. La randul lor, 
+aceste noduri trimit mai departe la copii vectorul si asteapta sa primeasca de la 
+acestia vectorul actualizat de acestia pe care il vor actualiza de asemenea si 
+nodurile care au primit de fiecare data. Orice nod, mai putin radacina, trimite 
+la parinte vectorul actualizat.
+
+Dupa ce s-a stabilit arborele de acoperire, elimin nodurile din listele de adiacenta, 
+care nu sunt vecine in arbore cu nodul de care apartine lista de vecini, si stabilesc 
+care noduri sunt frunze.
+De asemenea, trimit arborele de la radacina la toate celelalte noduri, pentru a 
+stii structura.
+
+La procesarea imaginilor, citesc din fisierul imagini.in numarul de imagini de pe 
+prima linie, iar apoi trimit de la rank 0 la toti copii numarul de imagini; la randul 
+lor si nodurile care nu sunt frunze trimit la copii numarul de imagini. Apoi, rank-ul 0 
+trimite intr-un loop fiecare imagine spre procesare. Datele din fisierul imagine 
+le salvez intr-o structura. De asemenea, matricea este bordata cu 0. Nodul 0, trimite 
+bucati(chunk-uri) de matrice la copii; daca nu se imparte exact, ultimul copil ia 
+bucata cea mai mare. Apoi, radacina primeste bucatile de matrice(fara borduri, pe care 
+le elimin in frunze) si le uneste. De asemenea tin cont de ordinea in care au fost trimise, 
+pentru ca rezultatul sa fie bun. De asemenea si celelalte noduri care nu sunt frunze 
+fac acelasi lucru pe care il face si radacina, doar ca dupa ce au trimis bucati si dupa 
+le-au primit si unit, trimit rezultatul la parinte. Frunzele sunt cele care aplica filtrele 
+pe fiecare bucata de matrice primita si apoi trimit rezultatul la parinte. 
+
+Dupa ce radacina a scris rezultatul in fisier, aceasta trimite mesaje cu tag de terminare la copii, 
+nodurile non-frunze trimit de asemenea la copii, iar frunzele doar receptioneaza acest mesaj, urmand 
+ca in urma receptionarii, fiecare frunza sa trimita catre parinte numarul total de linii procesate. 
+Nodurile non-frunze actualizeaza vectorul in care au primit statistica, setand si ele 0 ca numar de linii 
+procesate. Radacina va scrie statistica finala in fisier.
+
+
+Tema se ruleaza cu comanda din enunt "mpirun -np N ./filtru topologie.in imagini.in statistica.out", dupa 
+compilarea cu make build in urma careia se va genera executabilul "filtru".
+
+Optional, am adaugat si un make run, rulandu-se astfel dupa make build:
+make run arg=N topologie=topologie.in imagini=imagini.in statistica=statistica.out
